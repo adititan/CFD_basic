@@ -1,0 +1,15 @@
+Assignment 1: Floating point arithmetic
+
+
+
+1. Write code in C to find the epsilon of the machine for both the float and double types.
+
+2. Write code in Python or your favorite language (octave, scilab etc.) to find the epsilon of the machine.
+
+3. Plot the function
+f(x)=(1−cos(x))/(x∗x)
+in the region [-4e-8 <= x <= 4e-8] using your favorite programming language.  Plot the correct curve and show how you obtain it.
+
+4. Write out the finite difference form for the first derivative of a f(x) with a first order approximation (forward or backward), second order (O(h^2)) and fourth order approximation.
+
+5. Consider f(x) = sin(x) at the point x=pi/4.  Start with h=pi/4, compute the value of the first derivative for each scheme.  Keep halving h and compute the relative error between the computed value of the derivative and the exact value as you successively halve h.  Plot this on a log-log scale.
