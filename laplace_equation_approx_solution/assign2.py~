@@ -1,0 +1,205 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from copy import deepcopy
+
+# Initiate a matrix NxN with boundary/initial conditions.
+def initiate(N):
+    x,y = np.mgrid[0.0:1.0:N*1j , 0.0:1.0:N*1j]
+    phi = x**2 - y**2
+    phi[1:-1,1:-1] = 0.0 
+    return phi
+
+
+def one_step(u,i,j):
+    return 0.25*(u[i-1][j] + u[i+1][j] + u[i][j-1] + u[i][j+1])
+
+#Jacobi, Gauss Siedel and Successive Over Relaxation Scheme for solving Laplace equation.
+def laplace_solve(N,method='jacobi',iter_count = 100000,w = 1,factor_eps = 2.0):
+    phi = initiate(N)
+    phi_new = deepcopy(phi)
+    err = []
+    iterr = 0
+    error = 1.0
+    epsilon = np.finfo(float).eps
+    while(error > factor_eps*epsilon and iterr< iter_count):
+        s =0.0
+        for i in range(1,N-1):
+            for j in range(1,N-1):
+                if(method == 'jacobi'):
+                    phi_new[i][j] = one_step(phi,i,j)
+                elif(method == 'gauss_siedel'):
+                    phi_new[i][j] = one_step(phi_new,i,j)
+                elif(method == 'SOR'):
+                    phi_star = one_step(phi_new,i,j)
+                    phi_new[i][j] = w*phi_star + (1-w)*phi[i][j]
+                s += (phi_new[i][j] - phi[i][j])**2
+        error = np.sqrt(s)/(N)
+        phi = deepcopy(phi_new)
+	err.append(error)
+        print(w,error)
+        iterr +=1
+    iter_count = range(1,iterr+1)
+    #plt.figure()
+    #plt.imshow(phi)
+    #plt.show()
+    return err,iter_count
+
+#Gauss Siedel and Jacobi Scheme to solve Laplace Equation.
+def question1(list_size):
+    n_iter_j = []
+    n_iter_gs = []
+    plt.figure()
+    for size in list_size:
+        error,iter_c = laplace_solve(size,'jacobi')
+        n_iter_j.append(iter_c[-1])
+        plt.semilogy(iter_c,error,label = 'Grid_size='+str(size))
+    plt.legend()
+    plt.xlabel("Iterarion Index")
+    plt.ylabel("||Error||")
+    plt.savefig('jacobi.png')
+    plt.figure()
+    for size in list_size:
+        error,iter_c = laplace_solve(size,'gauss_siedel')
+        n_iter_gs.append(iter_c[-1])
+        plt.semilogy(iter_c,error,label = 'Grid_size='+str(size))
+    plt.legend()
+    plt.xlabel("Iterarion Index")
+    plt.ylabel("||Error||")
+    plt.savefig('gs.png')
+    plt.figure()
+    plt.loglog(list_size,n_iter_j,label='jacobi')
+    plt.loglog(list_size,n_iter_gs,label= 'gauss_siedel')
+    plt.legend()
+    plt.xlabel("Size of Grid")
+    plt.ylabel("No. of Iterations")
+    plt.savefig('ex_1.png')
+
+# Plots norm of Error vs. Iteration index for different sizes of the grid for 1000 iterations and w = 1.8
+def plot_all_sizes_sor():
+    sizee = np.linspace(11,101,10)
+    plt.figure()
+    for item in sizee:
+        errr,iter_count = laplace_solve(int(item),'SOR',1000,1.8,1.0)
+        plt.semilogy(iter_count,errr,label = "size = " + str(item))
+    plt.ylim((1e-20,10))
+    plt.xlabel("Iteration Index")
+    plt.ylabel("||Error||")
+    plt.legend()
+    plt.savefig('all_sizes.png')
+
+
+# Plots Residue vs. w for SOR scheme with different number of iterations for NxN grid.
+def residue_plot_all_w(N):
+    epsilon = np.finfo(float).eps
+    x,y = np.mgrid[0.0:1.0:N*1j , 0.0:1.0:N*1j]
+    plt.figure()
+    w_list = np.linspace(0.1,2.0,20)
+    iter_list = [10,20,50,100]
+    for iter_count in iter_list:
+        errorr = []
+        for w in w_list:
+            phi = initiate(N)
+            phi_new = deepcopy(phi)
+            iterr = 0
+            error = 1.0
+            for k in range(iter_count):
+                s =0.0
+                for i in range(1,N-1):
+                    for j in range(1,N-1):
+                        phi_star = one_step(phi_new,i,j)
+                        phi_new[i][j] = w*phi_star + (1-w)*phi[i][j]
+                phi = deepcopy(phi_new)
+            s = (phi - x**2 +y**2)**2
+            errorr.append(np.sqrt(s.sum())/N)
+        plt.semilogy(w_list,errorr,label = "iterations = " + str(iter_count))
+    plt.legend(bbox_to_anchor=(0.0, 0.3), loc=2)
+    plt.xlabel("w") 
+    plt.xticks(w_list, fontsize = 10)
+    plt.ylabel("||Residue||")
+    plt.grid()
+    plt.savefig('residue_'+ str(N) + '.png')
+
+def question2(minimum,maximum,size,num_iteration,dx = 0.1):
+    w_list = np.linspace(minimum,maximum,int((maximum-minimum+dx)/dx))
+    error = []
+    plt.figure()
+    for i,w in enumerate(w_list):
+        err,iter_count = laplace_solve(size,'SOR',num_iteration,w,1.0)
+        error.append(err[-1])
+        if i%3 ==0:
+            plt.semilogy(iter_count,err,label = 'w='+str(w))
+    err_min = min(error)
+    for i,item in enumerate(error):
+        if item == err_min:
+            index= i
+    print("optimal w for grid size: " +str(size)+ "x"+str(size) + " in range (" + str(minimum) +"," +str(maximum)+") with "+ str(num_iteration) + " iterations :",w_list[index])
+    plt.xlabel("Iteration Index")
+    plt.ylabel("||Error||")
+    plt.title("Plot of Error vs. iteration Index for different w after "+ str(num_iteration) + " iterations." )
+    plt.legend()
+    plt.savefig("all_w_"+str(size)+ '_'+ str(num_iteration)+ '_'+ str(int(100*dx))+ '.png')
+    plt.figure()
+    plt.semilogy(w_list,error)
+    plt.xlabel("w")
+    plt.title("Plot of error after "+str(num_iteration)+" iterations vs. w for Grid Size ("+ str(size)+"x"+ str(size) + ")")
+    plt.ylabel("||Error||")
+    plt.grid()
+    plt.xticks(w_list, fontsize = 10)
+    plt.xlim((minimum,maximum))
+    plt.savefig("w_"+str(size)+ '_'+ str(num_iteration) + '_'+ str(int(100*dx))+ '.png')
+    return w_list[index]
+
+def question6(n):
+    w_list = np.linspace(1.0,1.9,10)
+    iter_c = []
+    print(w_list)
+    for w in w_list:
+        error,iter_count = laplace_solve(n,'SOR',100000,w,2.0)
+        iter_c.append(iter_count[-1])
+    plt.figure()
+    plt.plot(w_list,iter_c)
+    plt.xlabel("w")
+    plt.ylabel("Number of Iterations")
+    plt.title("Number of Iterations to coverge to epsilon for w in range(1,2) for grid size " + str(n) + "x" + str(n))
+    plt.savefig('n_w_'+str(n)+'.png')
+    iter_min = min(iter_c)
+    for i,item in enumerate(iter_c):
+        if item == iter_min:
+            index= i
+    return w_list[index]
+
+def question7(w_opt,n):
+    plt.figure()
+    error,iteration_count = laplace_solve(n,'jacobi')
+    plt.semilogy(iteration_count,error,label = 'jacobi')
+    error,iteration_count = laplace_solve(n,'gauss_siedel')
+    plt.semilogy(iteration_count,error,label = 'gauss_siedel')
+    error,iteration_count = laplace_solve(n,'SOR',100000,w_opt,2.0)
+    plt.semilogy(iteration_count,error,label = 'SOR')
+    plt.xlabel("#Iterations")
+    plt.ylabel("||Error||")
+    plt.legend()
+    plt.title("L2 norm of error vs. number of iterations for different schemes")
+    plt.savefig('all_scheme_'+ str(n) +'_.png')
+
+if __name__ == '__main__':
+    """Question1: Solve Laplace equation for N=11, 21, 41, and 101.  Plot the error versus the iteration count on a semilog plot.  Do this for the Jacobi and Gauss-Seidel schemes."""
+    list_size = [11,21,41,61,101]
+    question1(list_size)
+    """Question2: For the SOR (Successive over relaxation) scheme, choose N=41.  Fix the number of iterations to 20 and hunt for a suitable w value between 0 to 2 in steps of 0.1."""
+    plot_all_sizes_sor()
+    w_opt2 = question2(0.1,2.0,41,20)
+    """Question3: Repeat Problem 2 with the number of iterations set to 50 and 100. Check if the plot changes."""
+    w_opt3_1 = question2(0.1,2.0,41,50)
+    w_opt3_2 = question2(0.1,2.0,41,100)
+    residue_plot_all_w(41)
+    """Question4: Once an approximate w_{opt} is found, hunt for a better estimate for the optimal in the range, (w_opt - 0.1, w_opt + 0.1) with steps of w in 0.01. Use 50 iterations. """
+    w_opt4 = question2(w_opt3_1-0.1,w_opt3_1+0.1,41,50,0.01)
+    """Question5: Does the w_opt change if N=101 and with a total of 100 iterations."""
+    w_opt5_1 = question2(0.1,2.0,101,100)	#1.9
+    residue_plot_all_w(101)
+    w_opt5_2 = question2(w_opt5_1-0.1,w_opt5_1+0.1,101,100,0.01)	#1.91
+    """Question6: Repeat the hunt for an optimal w_opt ( with w = linspace(1,2,11)) but this time calculate the number of iterations it takes to converge to machine epsilon instead of the error. Plot the number of iterations vs. w. """
+    w_opt6 = question6(101)
+    """Question7: Having found the optimal w, take N=101 and solve this using all the three schemes and plot the error vs.the number of iterations in a semi-log plot."""
+    question7(1.91,101)
