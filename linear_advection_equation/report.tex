@@ -1,0 +1,245 @@
+\documentclass{article}
+%Preamble
+\usepackage{float}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{longtable}
+\usepackage{amsmath,amssymb}
+\usepackage{graphics}
+\usepackage{graphicx}
+
+\title{\textbf{AE 706 -Computational Fluid Dynamics \\ Assignment 3: Report \\ Linear Advection Equation}}
+\author{Aditi Taneja}
+\date{\today}
+
+\begin{document}
+\pagenumbering{arabic}
+\maketitle
+
+\textbf{}
+\textbf{}
+\newpage
+\textbf{Consider the linear advection equation with a=1.  Implement the FTFS, FTCS and FTBS schemes for this problem.
+\\1. Consider the unit domain [0,1] with IC and BC's as
+\\u(0, t) = 1.0
+\\u(x, 0) = 0.0 for x $>$ 0
+\\Solve this problem using the different schemes using 50 grid points but with different CFL values $<$ 1, = 1 and $>$ 1.  Report your results systematically.  Simulate the problem for a time of at least 1 second.}
+
+\section*{FTCS}
+\begin{figure}[H] \label{figure}
+\includegraphics[width=9cm]{q1_FTCS_4_1.png}
+\caption{Variation of u vs. x using scheme FTCS with CFL 0.4 after 1 sec for the initial and boundary conditions given above.}
+\label{figure:}
+\end{figure}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=9cm]{q1_FTCS_10_1.png}
+\caption{Variation of u vs. x using scheme FTCS with CFL 1.0 after 1 sec for the initial and boundary conditions given above.}
+\label{figure:}
+\end{figure}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=9cm]{q1_FTCS_15_1.png}
+\caption{Variation of u vs. x using scheme FTCS with CFL 1.5 after 1 sec for the initial and boundary conditions given above.}
+\label{figure:}
+\end{figure}
+
+\textbf{Therefore, from above plots, it can be concluded that FTCS is unconditionally unstable i.e. unstable for any values of CFL.
+\\ Errors are large because of dispersion term being dominant and error is higher for higher CFL.}
+
+\newpage
+\section*{FTFS}
+\begin{figure}[H] \label{figure}
+\includegraphics[width=9cm]{q1_FTFS_4_1.png}
+\caption{Variation of u vs. x using scheme FTFS with CFL 0.4 after 1 sec for the initial and boundary conditions given above.}
+\label{figure:}
+\end{figure}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=9cm]{q1_FTFS_10_1.png}
+\caption{Variation of u vs. x using scheme FTFS with CFL 1.0 after 1 sec for the initial and boundary conditions given above.}
+\label{figure:}
+\end{figure}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=9cm]{q1_FTFS_15_1.png}
+\caption{Variation of u vs. x using scheme FTFS with CFL 0.4 after 1.5 sec for the initial and boundary conditions given above.}
+\label{figure:}
+\end{figure}
+
+\textbf{From above plots, it can be concluded that FTFS is unstable for all positive values of CFL.}
+
+\newpage
+\section*{FTBS}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=9cm]{q1_FTBS_4_1.png}
+\caption{Variation of u vs. x using scheme FTBS with CFL 0.4 after 1 sec for the initial and boundary conditions given above.}
+\label{figure:}
+\end{figure}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=9cm]{q1_FTBS_10_1.png}
+\caption{Variation of u vs. x using scheme FTBS with CFL 1.0 after 1 sec for the initial and boundary conditions given above.}
+\label{figure:}
+\end{figure}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=9cm]{q1_FTBS_15_1.png}
+\caption{Variation of u vs. x using scheme FTBS with CFL 1.5 after 1 sec for the initial and boundary conditions given above.}
+\label{figure:}
+\end{figure}
+
+\textbf{FTBS is conditionally unstable. It is stable for CFL less than or equal to 1.0, but unstable for any values greater than 1.0.}
+\textbf{When CFL number is less than 1.0, the modified equation for FTBS also has dissipative term and so can be seen in Figure 7. 
+\\However, when CFL number is 1.0, NO dispersion or dissipative effects occur because all dissipation and dispersion terms become zero for CFL = 1.0, which can be verified from Figure 8.}
+
+\newpage
+\textbf{2. Consider the IC and BC's as:
+\\u(0, t) = 0.0
+\\u(x, 0) = sin(2*pi*x)
+\\Also consider the following:
+\\u(x, 0) = sin(2*pi*x) + sin(20*pi*x)
+\\Use 100 points for this case.}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=9cm]{q2_0_FTCS_5_1.png}
+\caption{Variation of u vs. x using scheme FTCS with CFL 0.5 after 1 sec for the initial conditions given above.}
+\label{figure:}
+\end{figure}
+\textbf{Un-Conditionally Unstable; dispersion and negative dissipative terms present in the modified equation which has lead to huge errors.} 
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=9cm]{q2_0_FTBS_5_1.png}
+\caption{Variation of u vs. x using scheme FTBS with CFL 0.5 after 1 sec for the initial conditions given above.}
+\label{figure:}
+\end{figure}
+
+\textbf{ Stable ( 0.0 $\le CFL \le$ 1.0); Dissipative effect is visible with time and dominate over dispersion effect.}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=9cm]{q2_0_FTFS_5_1.png}
+\caption{Variation of u vs. x using scheme FTFS with CFL 0.5 after 1 sec for the initial conditions given above.}
+\label{figure:}
+\end{figure}
+
+\textbf{Unstable (CFL $>$ 0); High dispersion and growth term present in the modified equation which has lead to this huge errors.}
+
+\textbf{u(x, 0) = sin(2*pi*x) + sin(20*pi*x)}
+\begin{figure}[H] \label{figure}
+\includegraphics[width=9cm]{q2_1_FTCS_5_1.png}
+\caption{Variation of u vs. x using scheme FTCS with CFL 0.5 after 1 sec for the initial conditions given above.}
+\label{figure:}
+\end{figure}
+
+\textbf{Un-Conditionally Unstable;dispersion, growth; Higher frequencies will grow faster.}
+\begin{figure}[H] \label{figure}
+\includegraphics[width=9cm]{q2_1_FTBS_5_1.png}
+\caption{Variation of u vs. x using scheme FTBS with CFL 0.5 after 1 sec for the initial conditions given above.}
+\label{figure:}
+\end{figure}
+
+\textbf{Stable; Dissipative effects are more for higher frequecies as is visible in the figure.
+\\ Magnitude of u decreases with time.}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=9cm]{q2_1_FTFS_5_1.png}
+\caption{Variation of u vs. x using scheme FTFS with CFL 0.5 after 1 sec for the initial conditions given above.}
+\label{figure:}
+\end{figure}
+\textbf{Un-Conditionally Unstable;dispersion, growth; Higher frequencies will grow faster.}
+
+\newpage
+\textbf{3.Consider a periodic domain [-1,1] and solve the following test cases introduced by Laney but using the stable FTBS scheme and using the FTCS2 scheme which was discussed and used by Prof. Ramakrishna in the demo and class.
+\\Test case 1
+\\
+\\a = 1
+\\u(x, 0) = -sin($\pi$ x)
+\\Find u$(x, 30)$
+\\Use 40 evenly spaced points, with CFL=0.8.}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=10cm]{q3a_FTCS_8_30.png}
+\caption{Variation of u vs. x using scheme FTCS2 with CFL 0.8 after 30 sec for the initial conditions given above.}
+\label{figure:}
+\end{figure}
+
+\textbf{Because FTCS scheme was modified such that the dissipative term is eliminated and the scheme is stable for CFL values in range (0,1),therefore the modified FTCS i.e. FTCS2 does not show any significant dissipative effects.
+\\  Also, dispersion effects are not that significant.}
+
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=10cm]{q3a_FTBS_8_30.png}
+\caption{Variation of u vs. x using scheme FTBS with CFL 0.8 after 30 sec for the initial conditions given above.}
+\label{figure:}
+\end{figure}
+
+\textbf{Stable FTBS scheme has dissipative term in the modified equation as compared to FTCS2 and thus amplitude continously decreases with time.}
+
+\newpage
+
+\textbf{Test case 2
+\\
+\\Find u(x, 4) where:
+\\u(x,0)=1 where $|x|<1/3$    \\
+        =0 where $1/3<|x| \le 1$
+\\CFL = 0.8, 40 points}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=10cm]{q3b_40_FTCS_8_4.png}
+\caption{Variation of u vs. x using scheme FTCS2 with CFL 0.8 after 4 sec for the initial conditions given above.}
+\label{figure:}
+\end{figure}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=10cm]{q3b_40_FTBS_8_4.png}
+\caption{Variation of u vs. x using scheme FTBS with CFL 0.8 after 4 sec for the initial conditions given above.}
+\label{figure:}
+\end{figure}
+
+
+\begin{description}
+\item[]\textbf{Both the schemes are stable for CFL = 0.8.}
+\item[]\textbf{ No dissipation effects occur in FTCS2 as compared to FTBS where continuous dissipation occurs especially near the discontinuity because of high frequencies present there and high frequency terms dissipate faster than lower frequencies.}  
+\item[]\textbf{Dispersion Effects are visible in FTCS2 schemes for test case 2 but not in test case 1. This is because of high frequencies present near the discontinuity which lead to higher dispersion.}
+\item[]\textbf{Dissipative effect is dominant in FTBS than dispersion.}
+
+\end{description}
+
+\newpage
+\textbf{Test case 3
+\\
+\\Find u(x, 4) and u(x,40) with same IC as test case 2 use 600 initial points.
+\\Report your results carefully.}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=10cm]{q3b_600_FTCS_8_4.png}
+\caption{Variation of u vs. x using scheme FTCS2 with CFL 0.8 after 4 sec.}
+\label{figure:}
+\end{figure}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=10cm]{q3b_600_FTBS_8_4.png}
+\caption{Variation of u vs. x using scheme FTBS with CFL 0.8 after 4 sec.}
+\label{figure:}
+\end{figure}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=10cm]{q3b_600_FTCS_8_40.png}
+\caption{Variation of u vs. x using scheme FTCS2 with CFL 0.8 after 40 sec.}
+\label{figure:}
+\end{figure}
+
+\begin{figure}[H] \label{figure}
+\includegraphics[width=10cm]{q3b_600_FTBS_8_40.png}
+\caption{Variation of u vs. x using scheme FTBS with CFL 0.8 after 40 sec.}
+\label{figure:}
+\end{figure}
+
+\begin{description}
+\item[]\textbf{ As grid becomes finer, dispersion (In FTCS2) and dissipation (In FTBS) are confined near the discontinuities for the reason expained in Test case 2.}
+\item[]\textbf{ Dissipation effects are more visible with increasing time in FTBS scheme as can be seen in Figure 21 and 23.}
+\item[]\textbf{ As time increases, dispersion effect also become significant away from discontinuities for the same reason as above.}
+
+\end{description}
+\end{document}
